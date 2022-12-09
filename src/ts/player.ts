@@ -1,4 +1,4 @@
-import { Game } from '../main'
+import { Game } from './main'
 import { Diving, Falling, Jumping, Running, Standing } from './playerState'
 
 export class Player {
@@ -15,32 +15,32 @@ export class Player {
   fps: number
   frameInterval: number
   frameTimer: number
+
+  states: any[]
+  currentState: Diving | Falling | Jumping | Running | Standing
+  weight: number
   speed: number
   maxSpeed: number
-  states: any[]
-  currentState: any | undefined
-  weight: number
 
   constructor(game: Game) {
     this.game = game
-    this.width = 16 // & height of the player Depends on the sprite img
+    this.width = 16
     this.height = 16
     this.x = 0
-    this.y = this.game.height - this.height - this.game.groundMargin
+    this.y = this.game.height - this.height * 2
     this.vy = 0 // vertical y
     this.weight = 1
+    this.speed = 0
+    this.maxSpeed = 9
     this.image = document.getElementById('sprite') as HTMLImageElement
 
     this.frameX = 0 // frames to choose player sprite img
-    this.frameY = 0
+    this.frameY = 5.5
     this.maxFrame = 0
 
     this.fps = 20
     this.frameInterval = 1000 / this.fps
     this.frameTimer = 0
-
-    this.speed = 0
-    this.maxSpeed = 4
 
     this.states = [
       new Standing(this.game),
@@ -49,50 +49,47 @@ export class Player {
       new Falling(this.game),
       new Diving(this.game),
     ]
+
+    this.currentState = this.states[0]
   }
 
   update(input: string[], deltaTime: number) {
-    if (this.currentState) this.currentState.handleInput(input)
+    this.currentState.handleInput(input)
     this.x += this.speed
     // handle input also here for moving with all states
-    if (input.includes('ArrowRight') && this.currentState !== this.states[4])
+    if (input.includes('ArrowRight') && this.currentState !== this.states[4]) {
       this.speed = this.maxSpeed
-    else if (
+      this.game.screenX -= this.maxSpeed
+    } else if (
       input.includes('ArrowLeft') &&
       this.currentState !== this.states[4]
-    )
+    ) {
+      if (this.game.screenX >= 0) this.game.screenX = 0
       this.speed = -this.maxSpeed
+      this.game.screenX += this.maxSpeed
+    }
     //
     else this.speed = 0
+
     // horizontal boundaries
     if (this.x < 0) this.x = 0
-    if (this.x > this.game.width - this.width)
-      this.x = this.game.width - this.width
-    // vertical movement
+    if (this.x > this.game.width / 2) this.x = this.game.width / 2
+
+    // vertical boundaries
+    if (this.y > this.game.height - this.height) {
+      this.y = this.game.height - this.height
+    }
+
     this.y += this.vy
-    if (!this.onGround()) this.vy += this.weight
+    if (!this.isOnGround()) this.vy += this.weight
     else this.vy = 0
     // vertical boundaries
-    if (this.y > this.game.height - this.height - this.game.groundMargin)
-      this.y = this.game.height - this.height - this.game.groundMargin
+    if (this.y > this.game.height - this.height)
+      this.y = this.game.height - this.height
 
-    // sprite animation:
-    if (this.frameTimer > this.frameInterval) {
-      this.frameTimer = 0
-      if (this.frameX < this.maxFrame) this.frameX++
-      else {
-        if (this.currentState === this.states[2]) this.frameX = 5
-        else if (this.currentState === this.states[3]) this.frameX = 5
-        else this.frameX = 0
-      }
-    } else {
-      this.frameTimer += deltaTime
-    }
+    this.handleSpriteAnimation(deltaTime)
   }
   draw(context: CanvasRenderingContext2D) {
-    if (this.game.debug)
-      context.strokeRect(this.x, this.y, this.width, this.height)
-
     context.drawImage(
       this.image,
       this.frameX * this.width,
@@ -105,12 +102,27 @@ export class Player {
       this.height * 2
     )
   }
-  onGround() {
-    return this.y >= this.game.height - this.height - this.game.groundMargin
+
+  isOnGround() {
+    return this.y >= this.game.height - this.height * 2
   }
-  setState(state: number, speed: number) {
-    this.currentState = this.states[state]
-    this.game.speed = this.game.maxSpeed * speed
-    if (this.currentState) this.currentState.enter()
+
+  handleSpriteAnimation(deltaTime: number) {
+    if (this.frameTimer > this.frameInterval) {
+      this.frameTimer = 0
+      if (this.frameX < this.maxFrame) this.frameX++
+      else {
+        if (this.currentState instanceof Jumping) this.frameX = 5
+        else if (this.currentState instanceof Falling) this.frameX = 5
+        else this.frameX = 0
+      }
+    } else {
+      this.frameTimer += deltaTime
+    }
+  }
+
+  setState(stateNum: 0 | 1 | 2 | 3 | 4, _speed: number) {
+    this.currentState = this.states[stateNum]
+    this.currentState.enter()
   }
 }

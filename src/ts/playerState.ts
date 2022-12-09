@@ -1,12 +1,11 @@
-import { Game } from '../main'
+import { Game } from './main'
 
-// enum:
-const states = {
-  STANDING: 0,
-  RUNNING: 1,
-  JUMPING: 2,
-  FALLING: 3,
-  DIVING: 4,
+enum states {
+  STANDING = 0,
+  RUNNING = 1,
+  JUMPING = 2,
+  FALLING = 3,
+  DIVING = 4,
 }
 
 export class State {
@@ -72,15 +71,18 @@ export class Jumping extends State {
     super('JUMPING', game)
   }
   enter() {
-    if (this.game.player.onGround()) this.game.player.vy -= 27
+    if (this.game.player.isOnGround()) this.game.player.vy -= 20
     this.game.player.frameX = 5
     this.game.player.maxFrame = 0
     this.game.player.frameY = 5.5
   }
 
   handleInput(input: string[]) {
-    if (this.game.player.vy > this.game.player.weight) {
-      this.game.player.setState(states.FALLING, 1)
+    if (
+      this.game.player.vy > this.game.player.weight ||
+      !this.game.input.keys.includes('ArrowUp')
+    ) {
+      this.game.player.setState(states.FALLING, 5)
     } else if (input.includes('Enter')) {
       //
     } else if (input.includes('ArrowDown')) {
@@ -100,7 +102,7 @@ export class Falling extends State {
   }
 
   handleInput(input: string[]) {
-    if (this.game.player.onGround()) {
+    if (this.game.player.isOnGround()) {
       this.game.player.setState(states.RUNNING, 1)
     } else if (input.includes('ArrowDown')) {
       this.game.player.setState(states.DIVING, 0)
@@ -116,13 +118,13 @@ export class Diving extends State {
     this.game.player.frameX = 0
     this.game.player.maxFrame = 0
     this.game.player.frameY = 5.5
-    this.game.player.vy = 15
+    // this.game.player.vy = 15
   }
 
   handleInput(input: string[]) {
-    if (this.game.player.onGround()) {
+    if (this.game.player.isOnGround()) {
       this.game.player.setState(states.RUNNING, 1)
-    } else if (input.includes('Enter') && this.game.player.onGround()) {
+    } else if (input.includes('Enter') && this.game.player.isOnGround()) {
       //
     }
   }

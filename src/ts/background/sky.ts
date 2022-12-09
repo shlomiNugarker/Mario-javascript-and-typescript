@@ -1,4 +1,4 @@
-import { Game } from './main'
+import { Game } from '../main'
 
 export class Sky {
   game: Game
@@ -38,11 +38,9 @@ export class Sky {
   }
 
   update() {
-    if (this.x < -this.width) this.x = 0
-    else this.x -= this.game.speed * this.speedModifier
+    // always draw in the same position
   }
   draw(context: CanvasRenderingContext2D) {
-    // draw the image twice for endless moving ?
     const widthPxl = this.game.width / this.width
     const heightPxl = this.game.height / this.height
 
@@ -61,37 +59,5 @@ export class Sky {
         )
       }
     }
-  }
-}
-
-export class Background {
-  game: Game
-  width: number
-  height: number
-  tiles: HTMLImageElement
-  backgroundLayers: Sky[]
-  sky: Sky
-
-  constructor(game: Game) {
-    this.game = game
-    this.width = 1667
-    this.height = 500
-
-    this.tiles = document.getElementById('tiles') as HTMLImageElement
-
-    this.sky = new Sky(this.game, 16, 16, 0, this.tiles, 9, 7)
-
-    this.backgroundLayers = [this.sky]
-  }
-
-  update() {
-    this.backgroundLayers.forEach((layer) => {
-      layer.update()
-    })
-  }
-  draw(context: CanvasRenderingContext2D) {
-    this.backgroundLayers.forEach((layer) => {
-      layer.draw(context)
-    })
   }
 }

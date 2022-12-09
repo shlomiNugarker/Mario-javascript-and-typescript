@@ -19,7 +19,7 @@ export class InputHandler {
         this.keys.indexOf(ev.key) === -1
       ) {
         this.keys.push(ev.key)
-        console.log(this.keys)
+        // console.log(this.keys)
       }
     })
 
@@ -34,7 +34,7 @@ export class InputHandler {
         ev.key === 'Enter'
       ) {
         this.keys.splice(this.keys.indexOf(ev.key), 1)
-        console.log(this.keys)
+        // console.log(this.keys)
       }
     })
   }
