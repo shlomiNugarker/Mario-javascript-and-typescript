@@ -55,25 +55,27 @@ export class Player {
 
   update(input: string[], deltaTime: number) {
     this.currentState.handleInput(input)
-    this.x += this.speed
-    // handle input also here for moving with all states
-    if (input.includes('ArrowRight') && this.currentState !== this.states[4]) {
-      this.speed = this.maxSpeed
-      this.game.screenX -= this.maxSpeed
-    } else if (
-      input.includes('ArrowLeft') &&
-      this.currentState !== this.states[4]
+    this.handleInputToAllStates(input)
+
+    // ***************************************************************************************
+    // handle pipe with player
+    if (
+      this.game.input.keys.includes('ArrowRight') &&
+      this.game.background.pipe.x - (this.game.background.pipe.width / 2) * 4 <
+        this.x &&
+      this.y + this.height > this.game.background.pipe.y
     ) {
-      if (this.game.screenX >= 0) this.game.screenX = 0
-      this.speed = -this.maxSpeed
-      this.game.screenX += this.maxSpeed
     }
     //
-    else this.speed = 0
+    else this.x += this.speed
+
+    // ***********************************************************************************************
 
     // horizontal boundaries
     if (this.x < 0) this.x = 0
-    if (this.x > this.game.width / 2) this.x = this.game.width / 2
+
+    const isPlayerInTheMiddle = this.x > this.game.width / 2
+    if (isPlayerInTheMiddle) this.x = this.game.width / 2
 
     // vertical boundaries
     if (this.y > this.game.height - this.height) {
@@ -83,11 +85,16 @@ export class Player {
     this.y += this.vy
     if (!this.isOnGround()) this.vy += this.weight
     else this.vy = 0
+
     // vertical boundaries
     if (this.y > this.game.height - this.height)
       this.y = this.game.height - this.height
 
     this.handleSpriteAnimation(deltaTime)
+
+    // console.log('player x:', this.x)
+
+    // console.log('pipe x:', this.game.background.pipe.x)
   }
   draw(context: CanvasRenderingContext2D) {
     context.drawImage(
@@ -119,6 +126,21 @@ export class Player {
     } else {
       this.frameTimer += deltaTime
     }
+  }
+
+  handleInputToAllStates(input: string[]) {
+    if (input.includes('ArrowRight') && this.currentState !== this.states[4]) {
+      this.speed = this.maxSpeed
+      const isPlayerInTheMiddle = this.x > this.game.width / 2
+      if (isPlayerInTheMiddle) this.game.screenX -= this.maxSpeed
+    } else if (
+      input.includes('ArrowLeft') &&
+      this.currentState !== this.states[4]
+    ) {
+      if (this.game.screenX >= 0) this.game.screenX = 0
+      this.speed = -this.maxSpeed
+      // this.game.screenX += this.maxSpeed // player can go back
+    } else this.speed = 0
   }
 
   setState(stateNum: 0 | 1 | 2 | 3 | 4, _speed: number) {

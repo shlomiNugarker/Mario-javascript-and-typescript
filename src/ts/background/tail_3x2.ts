@@ -1,6 +1,6 @@
 import { Game } from '../main'
 
-export class Cloud {
+export class Tail_3x2 {
   game: Game
   height: number
   width: number
@@ -37,10 +37,7 @@ export class Cloud {
     this.maxFrame = maxFrame
   }
 
-  update() {
-    // this.x = this.x - this.game.screenX
-    // console.log(this.x - this.game.screenX)
-  }
+  update() {}
 
   draw(context: CanvasRenderingContext2D) {
     context.drawImage(
@@ -49,7 +46,6 @@ export class Cloud {
       this.frameY * this.height,
       this.width * 3,
       this.height * 2,
-      // this.x,
       this.x + this.game.screenX,
       this.y,
       this.width * 3,

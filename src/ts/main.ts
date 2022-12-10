@@ -16,11 +16,14 @@ export class Game {
   speed: number
   background: Background
   screenX: number
+  screenY: number
+  groundMargin: number
 
   constructor(width: number, height: number) {
     this.width = width
     this.height = height
     this.time = 0
+    this.groundMargin = 16
 
     this.speed = 0
 
@@ -29,12 +32,14 @@ export class Game {
     this.input = new InputHandler(this)
 
     this.screenX = 0
+    this.screenY = 0
 
     // this.player.currentState.enter()
   }
 
   update(deltaTime: number) {
     this.time += deltaTime
+    this.background.update()
     this.player.update(this.input.keys, deltaTime)
   }
 

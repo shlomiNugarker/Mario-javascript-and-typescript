@@ -1,6 +1,6 @@
 import { Game } from '../main'
 
-export class Cloud {
+export class Pipe {
   game: Game
   height: number
   width: number
@@ -37,22 +37,18 @@ export class Cloud {
     this.maxFrame = maxFrame
   }
 
-  update() {
-    // this.x = this.x - this.game.screenX
-    // console.log(this.x - this.game.screenX)
-  }
+  update() {}
 
   draw(context: CanvasRenderingContext2D) {
     context.drawImage(
       this.image,
       this.frameX * this.width,
       this.frameY * this.height,
-      this.width * 3,
+      this.width * 2,
       this.height * 2,
-      // this.x,
       this.x + this.game.screenX,
       this.y,
-      this.width * 3,
+      this.width * 2,
       this.height * 2
     )
   }

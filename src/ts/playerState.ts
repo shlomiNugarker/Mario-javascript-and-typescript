@@ -44,7 +44,7 @@ export class Running extends State {
     super('RUNNING', game)
   }
   enter() {
-    this.game.player.frameX = 0
+    this.game.player.frameX = 1
     this.game.player.maxFrame = 3
     this.game.player.frameY = 5.5
   }
